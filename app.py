@@ -21,10 +21,15 @@ app = FastAPI(
 # Only needed if you open the frontend from another address (e.g. VS Code Live Server)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    allow_origins=[
+        "http://127.0.0.1:5500", 
+        "http://localhost:5500",
+        "https://onrender.com"  # Added your live production URL
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Open routes: /auth/login, /health, /
 app.include_router(auth_router.router)

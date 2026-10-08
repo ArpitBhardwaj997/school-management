@@ -1,5 +1,5 @@
 // Login page: log in, or (first run only) create the first admin.
-const API = location.port === "8000" ? "" : "http://127.0.0.1:8000";
+const API = location.hostname.includes("onrender.com") ? "" : "http://127.0.0.1:8000";
 const $ = (s) => document.querySelector(s);
 const detail = (d) => (typeof d === "string" ? d : Array.isArray(d) ? d.map((x) => x.msg).join("; ") : "Request failed");
 

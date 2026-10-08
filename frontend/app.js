@@ -1,5 +1,5 @@
 // School Management frontend (plain JS). Talks to the FastAPI backend.
-const API = location.port === "8000" ? "" : "http://127.0.0.1:8000";
+const API = location.hostname.includes("onrender.com") ? "" : "http://127.0.0.1:8000";
 const LIMIT = 20;
 const METHODS = ["cash", "upi", "card", "cheque", "bank transfer"];
 const $ = (s) => document.querySelector(s);

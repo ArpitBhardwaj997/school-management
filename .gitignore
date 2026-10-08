@@ -3,3 +3,5 @@
 __pycache__/
 *.pyc
 .vscode/
+school_management_backup.sql
+
