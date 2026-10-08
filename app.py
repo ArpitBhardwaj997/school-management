@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from src.auth.dependencies import get_current_admin
 from src.database.database import get_db
-from src.router import auth_router, class_router, fee_router, payment_router, student_router
+from src.router import auth_router, class_router, fee_router, payment_router, report_router, student_router
 
 app = FastAPI(
     title="School Management System",
@@ -35,6 +35,7 @@ app.include_router(class_router.router, dependencies=protected)
 app.include_router(student_router.router, dependencies=protected)
 app.include_router(fee_router.router, dependencies=protected)
 app.include_router(payment_router.router, dependencies=protected)
+app.include_router(report_router.router, dependencies=protected)
 
 
 @app.get("/")

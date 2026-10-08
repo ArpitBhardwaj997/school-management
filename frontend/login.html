@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in | School Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="login">
+    <div class="hero">
+      <div class="logo">🎓</div>
+      <h2>School Admin</h2>
+      <p>Classes, students, fees and payments in one secure place.</p>
+    </div>
+    <div class="panel">
+      <form id="login-form">
+        <h1>Welcome back</h1>
+        <p class="sub">Log in to continue</p>
+        <label>Username <input id="u" required autocomplete="username" placeholder="Admin username"></label>
+        <label>Password <input id="p" type="password" required autocomplete="current-password" placeholder="••••••••"></label>
+        <p id="login-err" class="err"></p>
+        <button class="wide">Log in</button>
+        <p class="sub"><a href="#" id="setup-link" hidden>First time? Create the admin account</a></p>
+      </form>
+
+      <form id="setup-form" hidden>
+        <h1>Create admin</h1>
+        <p class="sub">One-time setup. It closes after the first admin exists.</p>
+        <label>Username <input name="username" required minlength="3" maxlength="50" autocomplete="username"></label>
+        <label>Email <input name="email" type="email" required maxlength="100"></label>
+        <label>Password (min 10 characters) <input name="password" type="password" required minlength="10" maxlength="72" autocomplete="new-password"></label>
+        <label>Repeat password <input name="again" type="password" required autocomplete="new-password"></label>
+        <label>Setup key <input name="setup_key" type="password" required autocomplete="off" placeholder="SETUP_KEY from .env"></label>
+        <p id="setup-err" class="err"></p>
+        <button class="wide">Create admin</button>
+        <p class="sub"><a href="#" id="back">Back to login</a></p>
+      </form>
+    </div>
+  </main>
+  <script src="login.js"></script>
+</body>
+</html>

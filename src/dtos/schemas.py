@@ -1,7 +1,7 @@
 # src/dtos/schemas.py
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -117,3 +117,30 @@ class AdminResponse(BaseModel):
     admin_id: int
     username: str
     email: str
+
+
+class AdminSetup(BaseModel):
+    username: str = Field(min_length=3, max_length=50)
+    email: str = Field(max_length=100, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    password: str = Field(min_length=10, max_length=72)
+    setup_key: str
+
+
+# ---------- Reports ----------
+class ClassReport(BaseModel):
+    class_id: int
+    class_name: str
+    students: int
+    fee_per_student: Optional[Decimal] = None
+    expected: Decimal
+    collected: Decimal
+    pending: Decimal
+
+
+class DashboardResponse(BaseModel):
+    total_classes: int
+    total_students: int
+    total_collected: Decimal
+    total_expected: Decimal
+    total_pending: Decimal
+    classes: List[ClassReport]

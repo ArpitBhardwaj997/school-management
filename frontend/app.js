@@ -9,6 +9,7 @@ const money = (v) => new Intl.NumberFormat("en-IN", { style: "currency", currenc
 
 const ico = (p) => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const ICON = {
+  dashboard: ico('<rect x="3" y="3" width="7.5" height="9" rx="2"/><rect x="13.5" y="3" width="7.5" height="5" rx="2"/><rect x="13.5" y="11" width="7.5" height="10" rx="2"/><rect x="3" y="15" width="7.5" height="6" rx="2"/>'),
   classes: ico('<path d="M3 8l9-4 9 4-9 4-9-4z"/><path d="M7 10.5v4.5c0 1.4 2.2 3 5 3s5-1.6 5-3v-4.5"/>'),
   students: ico('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 010 6.8M18 14.8c2 .6 3.2 2.2 3.5 4.7"/>'),
   fees: ico('<path d="M6 4h12M6 9h12M9 4c4 0 6 2 6 5s-2 5-6 5l7 6"/>'),
@@ -22,6 +23,7 @@ let classes = [], current = "classes", page = 0, rows = {};
 
 // What each page shows and which fields its form has
 const R = {
+  dashboard: { title: "Dashboard", custom: true },
   classes: { title: "Classes", path: "/classes", id: "class_id",
     cols: ["class_id", "class_name"],
     fields: [{ n: "class_name" }] },
@@ -55,31 +57,11 @@ async function api(path, method = "GET", body) {
   return data;
 }
 
-// ---------- login / logout ----------
-$("#login-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  try {
-    const res = await fetch(API + "/auth/login", {
-      method: "POST",
-      body: new URLSearchParams({ username: $("#u").value, password: $("#p").value }),
-    });
-    const d = await res.json().catch(() => ({}));
-    if (!res.ok) { $("#login-err").textContent = d.detail || "Login failed"; return; }
-    token = d.access_token;
-    expAt = Date.now() + d.expires_in * 1000;
-    sessionStorage.setItem("token", token);   // cleared when the tab closes
-    sessionStorage.setItem("expAt", expAt);
-    $("#p").value = "";
-    start();
-  } catch { $("#login-err").textContent = "Cannot reach the server."; }
-});
-
+// ---------- logout ----------
 function logout(msg = "") {
   sessionStorage.clear();
-  token = null;
-  $("#app").hidden = true;
-  $("#login").hidden = false;
-  $("#login-err").textContent = msg;
+  if (msg) sessionStorage.setItem("flash", msg);
+  location.href = "login.html";
 }
 $("#logout").onclick = () => logout();
 
@@ -91,11 +73,9 @@ setInterval(() => {
 }, 15000);
 
 async function start() {
-  $("#login").hidden = true;
-  $("#app").hidden = false;
   $("#nav").innerHTML = Object.keys(R).map((k) => `<button data-nav="${k}">${ICON[k]}<span>${R[k].title}</span></button>`).join("");
   $("#timer").textContent = `Session ends in ${Math.ceil((expAt - Date.now()) / 60000)} min`;
-  try { classes = await api("/classes?limit=100"); show("classes"); } catch {}
+  try { classes = await api("/classes?limit=100"); show("dashboard"); } catch {}
 }
 $("#nav").addEventListener("click", (e) => { const b = e.target.closest("[data-nav]"); if (b) show(b.dataset.nav); });
 
@@ -112,6 +92,7 @@ async function show(name, p = 0) {
   const r = R[name];
   $("#title").textContent = r.title;
   document.querySelectorAll("#nav button").forEach((b) => b.classList.toggle("on", b.dataset.nav === name));
+  if (r.custom) return dashboard();
   let list;
   try { list = await api(`${r.path}?skip=${p * LIMIT}&limit=${LIMIT}`); }
   catch (e) { $("#content").innerHTML = `<p class="err">${esc(e.message)}</p>`; return; }
@@ -201,3 +182,18 @@ async function summary(s) {
 $("#dlg").addEventListener("click", (e) => { if (e.target.hasAttribute("data-close")) $("#dlg").close(); });
 
 if (token && expAt > Date.now()) start(); else logout();
+
+// ---------- dashboard ----------
+async function dashboard() {
+  let d;
+  try { d = await api("/reports/dashboard"); }
+  catch (e) { $("#content").innerHTML = `<p class="err">${esc(e.message)}</p>`; return; }
+  const stat = (label, value, cls = "") => `<div class="stat ${cls}"><span>${label}</span><b>${value}</b></div>`;
+  const rows = d.classes.map((c) => `<tr><td><span class="chip">${esc(c.class_name)}</span></td><td>${c.students}</td>
+    <td>${c.fee_per_student == null ? "—" : esc(money(c.fee_per_student))}</td><td>${esc(money(c.expected))}</td>
+    <td>${esc(money(c.collected))}</td><td><b>${esc(money(c.pending))}</b></td></tr>`).join("");
+  $("#content").innerHTML = `<div class="stats">${stat("Classes", d.total_classes)}${stat("Students", d.total_students)}
+    ${stat("Collected", esc(money(d.total_collected)), "ok")}${stat("Pending fees", esc(money(d.total_pending)), "warn")}</div>
+    <div class="card"><table><thead><tr><th>Class</th><th>Students</th><th>Fee / student</th><th>Expected</th><th>Collected</th><th>Pending</th></tr></thead>
+    <tbody>${rows || `<tr><td colspan="6">No classes yet.</td></tr>`}</tbody></table></div>`;
+}

@@ -34,7 +34,7 @@ label input, label select, label textarea { margin-top:6px; font-weight:400; }
 .hero p { max-width:340px; opacity:.85; font-size:16px; }
 .logo { width:56px; height:56px; display:grid; place-items:center; font-size:28px; border-radius:16px; background:rgba(255,255,255,.16); backdrop-filter:blur(6px); }
 .logo.sm { width:34px; height:34px; font-size:18px; border-radius:10px; }
-#login form { align-self:center; justify-self:center; width:min(380px, 88%); padding:8px 0; }
+
 #login h1 { font-size:26px; }
 .sub { color:var(--muted); margin:4px 0 24px; }
 
@@ -90,3 +90,13 @@ dt { color:var(--muted); } dd { margin:0; font-weight:600; text-align:right; }
   nav { flex-direction:row; flex-wrap:wrap; } .foot { flex-direction:row; align-items:center; }
   section { padding:18px 14px; }
 }
+
+/* ---------- login panel + dashboard ---------- */
+.panel { display:grid; place-items:center; padding:24px; }
+.panel form { width:min(380px, 100%); }
+.panel a { color:var(--brand); font-weight:600; text-decoration:none; }
+.stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:20px; }
+.stat { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px 20px; box-shadow:var(--shadow); }
+.stat span { color:var(--muted); font-size:13px; font-weight:600; }
+.stat b { display:block; font-size:26px; margin-top:4px; letter-spacing:-.02em; }
+.stat.ok b { color:var(--ok); } .stat.warn b { color:#d97706; }
